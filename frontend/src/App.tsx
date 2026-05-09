@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Typography, Paper, Box, CircularProgress } from '@mui/material';
 
 function App() {

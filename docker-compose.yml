@@ -2,10 +2,12 @@ services:
   db:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: finance
+      MYSQL_ROOT_PASSWORD: sa 
+      MYSQL_DATABASE: personal_finance_management
+      MYSQL_USER: sa
+      MYSQL_PASSWORD: sa
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
 
@@ -14,9 +16,9 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 3306
-      DB_NAME: finance
-      DB_USER: root
-      DB_PASSWORD: password
+      DB_NAME: personal_finance_management
+      DB_USER: sa
+      DB_PASSWORD: sa
     depends_on:
       - db
 
