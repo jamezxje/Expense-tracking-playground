@@ -12,6 +12,10 @@ interface Summary {
   categorySpending: Record<string, number>;
 }
 
+const formatVND = (value: number) => {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+};
+
 const Dashboard: React.FC = () => {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,35 +40,37 @@ const Dashboard: React.FC = () => {
       
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={4}>
-          <Card sx={{ borderLeft: '6px solid #4caf50' }}>
+          <Card sx={{ borderLeft: '6px solid #4caf50', borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <AccountBalanceWallet color="success" sx={{ mr: 1 }} />
                 <Typography color="textSecondary" variant="subtitle2">Current Balance</Typography>
               </Box>
-              <Typography variant="h4" sx={{ fontWeight: 'bold' }}>${summary?.balance.toLocaleString()}</Typography>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', color: (summary?.balance || 0) < 0 ? 'error.main' : 'success.main' }}>
+                {formatVND(summary?.balance || 0)}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Card sx={{ borderLeft: '6px solid #2196f3' }}>
+          <Card sx={{ borderLeft: '6px solid #2196f3', borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <TrendingUp color="primary" sx={{ mr: 1 }} />
                 <Typography color="textSecondary" variant="subtitle2">Total Income</Typography>
               </Box>
-              <Typography variant="h4" sx={{ fontWeight: 'bold' }}>${summary?.totalIncome.toLocaleString()}</Typography>
+              <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{formatVND(summary?.totalIncome || 0)}</Typography>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Card sx={{ borderLeft: '6px solid #f44336' }}>
+          <Card sx={{ borderLeft: '6px solid #f44336', borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <TrendingDown color="error" sx={{ mr: 1 }} />
                 <Typography color="textSecondary" variant="subtitle2">Total Expenses</Typography>
               </Box>
-              <Typography variant="h4" sx={{ fontWeight: 'bold' }}>${summary?.totalExpense.toLocaleString()}</Typography>
+              <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{formatVND(summary?.totalExpense || 0)}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -72,43 +78,44 @@ const Dashboard: React.FC = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" gutterBottom>Spending by Category</Typography>
+          <Paper sx={{ p: 3, height: 450, borderRadius: 4 }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>Spending by Category</Typography>
             <ResponsiveContainer width="100%" height="90%">
               <PieChart>
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="50%"
-                  outerRadius={100}
+                  outerRadius={120}
                   fill="#8884d8"
                   dataKey="value"
-                  label
+                  label={({ name, percent }) => `${name} ${( (percent || 0) * 100).toFixed(0)}%`}
                 >
                   {pieData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip formatter={(value: any) => formatVND(Number(value))} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" gutterBottom>Income vs Expense</Typography>
+          <Paper sx={{ p: 3, height: 450, borderRadius: 4 }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>Income vs Expense</Typography>
             <ResponsiveContainer width="100%" height="90%">
               <BarChart
                 data={[
                   { name: 'Income', amount: summary?.totalIncome },
                   { name: 'Expense', amount: summary?.totalExpense },
                 ]}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="amount" fill="#82ca9d">
+                <YAxis tickFormatter={(value) => `${(value / 1000).toLocaleString()}k`} />
+                <Tooltip formatter={(value: any) => formatVND(Number(value))} />
+                <Bar dataKey="amount" radius={[8, 8, 0, 0]}>
                    { [0, 1].map((_, index) => (
                     <Cell key={`cell-${index}`} fill={index === 0 ? '#4caf50' : '#f44336'} />
                   ))}
