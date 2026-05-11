@@ -109,7 +109,7 @@ const Dashboard: React.FC = () => {
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="amount" fill="#82ca9d">
-                   { [0, 1].map((entry, index) => (
+                   { [0, 1].map((_, index) => (
                     <Cell key={`cell-${index}`} fill={index === 0 ? '#4caf50' : '#f44336'} />
                   ))}
                 </Bar>
