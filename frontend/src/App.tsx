@@ -3,6 +3,7 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
+import Categories from './pages/Categories';
 
 const theme = createTheme({
   palette: {
@@ -58,7 +59,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/transactions" element={<Transactions />} />
-            <Route path="/categories" element={<Transactions />} /> {/* Reuse for now */}
+            <Route path="/categories" element={<Categories />} />
           </Routes>
         </Layout>
       </Router>
