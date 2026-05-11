@@ -11,6 +11,7 @@ interface Transaction {
   amount: number;
   description: string;
   category: string;
+  transactionDate: string;
 }
 
 interface Category {
@@ -23,7 +24,16 @@ const Transactions: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newTransaction, setNewTransaction] = useState<Transaction>({ amount: 0, description: '', category: '' });
+  
+  // Default to today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
+
+  const [newTransaction, setNewTransaction] = useState<Transaction>({ 
+    amount: 0, 
+    description: '', 
+    category: '', 
+    transactionDate: today 
+  });
 
   const fetchData = async () => {
     try {
@@ -33,8 +43,15 @@ const Transactions: React.FC = () => {
       ]);
       const transData = await transRes.json();
       const catData = await catRes.json();
-      setTransactions(transData);
+      
+      // Sort transactions by date descending
+      const sortedTrans = transData.sort((a: any, b: any) => 
+        new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime()
+      );
+
+      setTransactions(sortedTrans);
       setCategories(catData);
+      
       if (catData.length > 0 && !newTransaction.category) {
         setNewTransaction(prev => ({ ...prev, category: catData[0].name }));
       }
@@ -50,20 +67,26 @@ const Transactions: React.FC = () => {
   const handleCreateTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Find the selected category to determine the sign
     const selectedCategory = categories.find(cat => cat.name === newTransaction.category);
     let finalAmount = Math.abs(newTransaction.amount);
     if (selectedCategory?.type === 'EXPENSE') {
       finalAmount = -finalAmount;
     }
 
+    // Append time to date string for LocalDateTime compatibility if needed
+    const transactionToSave = {
+      ...newTransaction,
+      amount: finalAmount,
+      transactionDate: newTransaction.transactionDate + "T00:00:00"
+    };
+
     const res = await fetch('/api/transactions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...newTransaction, amount: finalAmount })
+      body: JSON.stringify(transactionToSave)
     });
     if (res.ok) {
-      setNewTransaction({ ...newTransaction, amount: 0, description: '' });
+      setNewTransaction({ ...newTransaction, amount: 0, description: '', transactionDate: today });
       fetchData();
     }
   };
@@ -83,7 +106,18 @@ const Transactions: React.FC = () => {
         <Typography variant="h6" sx={{ mb: 2 }}>Quick Add</Typography>
         <form onSubmit={handleCreateTransaction}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={2}>
+              <TextField 
+                fullWidth 
+                label="Date" 
+                type="date" 
+                value={newTransaction.transactionDate} 
+                onChange={(e) => setNewTransaction({...newTransaction, transactionDate: e.target.value})} 
+                required 
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={2}>
               <TextField 
                 fullWidth 
                 label="Amount" 
@@ -91,10 +125,9 @@ const Transactions: React.FC = () => {
                 value={newTransaction.amount} 
                 onChange={(e) => setNewTransaction({...newTransaction, amount: Number(e.target.value)})} 
                 required 
-                helperText="Enter positive number"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField fullWidth label="Description" value={newTransaction.description} onChange={(e) => setNewTransaction({...newTransaction, description: e.target.value})} required />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -117,6 +150,7 @@ const Transactions: React.FC = () => {
         <Table>
           <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
             <TableRow>
+              <TableCell sx={{ fontWeight: 'bold' }}>Date</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Category</TableCell>
               <TableCell align="right" sx={{ fontWeight: 'bold' }}>Amount</TableCell>
@@ -124,10 +158,11 @@ const Transactions: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {loading ? <TableRow><TableCell colSpan={4} align="center"><CircularProgress /></TableCell></TableRow> :
-             transactions.length === 0 ? <TableRow><TableCell colSpan={4} align="center">No records.</TableCell></TableRow> :
+            {loading ? <TableRow><TableCell colSpan={5} align="center"><CircularProgress /></TableCell></TableRow> :
+             transactions.length === 0 ? <TableRow><TableCell colSpan={5} align="center">No records.</TableCell></TableRow> :
              transactions.map((row) => (
                <TableRow key={row.id} hover>
+                 <TableCell>{new Date(row.transactionDate).toLocaleDateString()}</TableCell>
                  <TableCell>{row.description}</TableCell>
                  <TableCell>{row.category}</TableCell>
                  <TableCell align="right" sx={{ color: row.amount < 0 ? 'error.main' : 'success.main', fontWeight: 'bold' }}>
