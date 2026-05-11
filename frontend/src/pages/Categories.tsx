@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { 
   Typography, Paper, Box, CircularProgress, 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Button, TextField, Grid, IconButton, Divider
+  Button, TextField, Grid, IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
