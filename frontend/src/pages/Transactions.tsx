@@ -106,11 +106,11 @@ const Transactions: React.FC = () => {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>Transactions</Typography>
+        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>Giao dịch</Typography>
       </Box>
 
       <Paper sx={{ p: 3, mb: 4, borderRadius: 3 }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>Quick Add</Typography>
+        <Typography variant="h6" sx={{ mb: 2 }}>Thêm nhanh</Typography>
         <form onSubmit={handleCreateTransaction}>
           <Grid container spacing={2}>
             {/* 1. Category */}
@@ -118,14 +118,14 @@ const Transactions: React.FC = () => {
               <TextField 
                 fullWidth 
                 select 
-                label="Category" 
+                label="Danh mục" 
                 value={newTransaction.category} 
                 onChange={(e) => setNewTransaction({...newTransaction, category: e.target.value})}
                 required
               >
                 {categories.map((cat) => (
                   <MenuItem key={cat.id} value={cat.name}>
-                    {cat.name} ({cat.type})
+                    {cat.name} ({cat.type === 'INCOME' ? 'THU NHẬP' : 'CHI PHÍ'})
                   </MenuItem>
                 ))}
               </TextField>
@@ -136,7 +136,7 @@ const Transactions: React.FC = () => {
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <TextField 
                   fullWidth 
-                  label="Amount" 
+                  label="Số tiền" 
                   type="number" 
                   value={newTransaction.amount === 0 ? '' : newTransaction.amount} 
                   onChange={(e) => setNewTransaction({...newTransaction, amount: e.target.value === '' ? 0 : Number(e.target.value)})} 
@@ -158,7 +158,7 @@ const Transactions: React.FC = () => {
             <Grid item xs={12} sm={2}>
               <TextField 
                 fullWidth 
-                label="Date" 
+                label="Ngày" 
                 type="date" 
                 value={newTransaction.transactionDate} 
                 onChange={(e) => setNewTransaction({...newTransaction, transactionDate: e.target.value})} 
@@ -171,7 +171,7 @@ const Transactions: React.FC = () => {
             <Grid item xs={12} sm={3}>
               <TextField 
                 fullWidth 
-                label="Description" 
+                label="Mô tả" 
                 value={newTransaction.description} 
                 onChange={(e) => setNewTransaction({...newTransaction, description: e.target.value})} 
                 required 
@@ -186,7 +186,7 @@ const Transactions: React.FC = () => {
                 type="submit" 
                 sx={{ height: '56px', borderRadius: 2 }}
               >
-                Add
+                Thêm
               </Button>
             </Grid>
           </Grid>
@@ -197,16 +197,16 @@ const Transactions: React.FC = () => {
         <Table>
           <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Date</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Category</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Amount (VND)</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Ngày</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Mô tả</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Danh mục</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Số tiền (VND)</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Thao tác</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {loading ? <TableRow><TableCell colSpan={5} align="center"><CircularProgress /></TableCell></TableRow> :
-             transactions.length === 0 ? <TableRow><TableCell colSpan={5} align="center">No records.</TableCell></TableRow> :
+             transactions.length === 0 ? <TableRow><TableCell colSpan={5} align="center">Không có dữ liệu.</TableCell></TableRow> :
              transactions.map((row) => (
                <TableRow key={row.id} hover>
                  <TableCell>{new Date(row.transactionDate).toLocaleDateString()}</TableCell>

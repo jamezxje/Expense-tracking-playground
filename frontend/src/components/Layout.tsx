@@ -11,8 +11,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Transactions', icon: <ReceiptIcon />, path: '/transactions' },
-    { text: 'Categories', icon: <CategoryIcon />, path: '/categories' },
+    { text: 'Giao dịch', icon: <ReceiptIcon />, path: '/transactions' },
+    { text: 'Danh mục', icon: <CategoryIcon />, path: '/categories' },
   ];
 
   return (

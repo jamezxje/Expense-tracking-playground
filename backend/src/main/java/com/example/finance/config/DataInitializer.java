@@ -19,22 +19,22 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
         if (categoryRepository.count() == 0) {
             Map<String, CategoryType> defaultCategories = Map.of(
-                "Salary", CategoryType.INCOME,
-                "Investment", CategoryType.INCOME,
-                "Gift", CategoryType.INCOME,
-                "Food", CategoryType.EXPENSE,
-                "Transport", CategoryType.EXPENSE,
-                "Shopping", CategoryType.EXPENSE,
-                "Utilities", CategoryType.EXPENSE,
-                "Entertainment", CategoryType.EXPENSE,
-                "Other", CategoryType.EXPENSE
+                "Lương", CategoryType.INCOME,
+                "Đầu tư", CategoryType.INCOME,
+                "Quà tặng", CategoryType.INCOME,
+                "Ăn uống", CategoryType.EXPENSE,
+                "Di chuyển", CategoryType.EXPENSE,
+                "Mua sắm", CategoryType.EXPENSE,
+                "Tiện ích", CategoryType.EXPENSE,
+                "Giải trí", CategoryType.EXPENSE,
+                "Khác", CategoryType.EXPENSE
             );
             
             defaultCategories.forEach((name, type) -> {
                 categoryRepository.save(Category.builder().name(name).type(type).build());
             });
             
-            System.out.println("Default categories initialized with types.");
+            System.out.println("Default categories initialized with Vietnamese names.");
         }
     }
 }

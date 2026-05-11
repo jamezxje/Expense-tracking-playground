@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold' }}>Dashboard Overview</Typography>
+      <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold' }}>Tổng quan Dashboard</Typography>
       
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} md={4}>
@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <AccountBalanceWallet color="success" sx={{ mr: 1 }} />
-                <Typography color="textSecondary" variant="subtitle2">Current Balance</Typography>
+                <Typography color="textSecondary" variant="subtitle2">Số dư hiện tại</Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 'bold', color: (summary?.balance || 0) < 0 ? 'error.main' : 'success.main' }}>
                 {formatVND(summary?.balance || 0)}
@@ -57,7 +57,7 @@ const Dashboard: React.FC = () => {
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <TrendingUp color="primary" sx={{ mr: 1 }} />
-                <Typography color="textSecondary" variant="subtitle2">Total Income</Typography>
+                <Typography color="textSecondary" variant="subtitle2">Tổng thu nhập</Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{formatVND(summary?.totalIncome || 0)}</Typography>
             </CardContent>
@@ -68,7 +68,7 @@ const Dashboard: React.FC = () => {
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <TrendingDown color="error" sx={{ mr: 1 }} />
-                <Typography color="textSecondary" variant="subtitle2">Total Expenses</Typography>
+                <Typography color="textSecondary" variant="subtitle2">Tổng chi tiêu</Typography>
               </Box>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{formatVND(summary?.totalExpense || 0)}</Typography>
             </CardContent>
@@ -79,7 +79,7 @@ const Dashboard: React.FC = () => {
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, height: 450, borderRadius: 4 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>Spending by Category</Typography>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>Chi tiêu theo danh mục</Typography>
             <ResponsiveContainer width="100%" height="90%">
               <PieChart>
                 <Pie
@@ -103,12 +103,12 @@ const Dashboard: React.FC = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, height: 450, borderRadius: 4 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>Income vs Expense</Typography>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>Thu nhập vs Chi phí</Typography>
             <ResponsiveContainer width="100%" height="90%">
               <BarChart
                 data={[
-                  { name: 'Income', amount: summary?.totalIncome },
-                  { name: 'Expense', amount: summary?.totalExpense },
+                  { name: 'Thu nhập', amount: summary?.totalIncome },
+                  { name: 'Chi phí', amount: summary?.totalExpense },
                 ]}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >

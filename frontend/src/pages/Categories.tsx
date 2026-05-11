@@ -53,16 +53,16 @@ const Categories: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold' }}>Categories Management</Typography>
+      <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold' }}>Quản lý danh mục</Typography>
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Paper sx={{ p: 3, borderRadius: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Add New Category</Typography>
+            <Typography variant="h6" sx={{ mb: 2 }}>Thêm danh mục mới</Typography>
             <form onSubmit={handleCreateCategory}>
               <TextField 
                 fullWidth 
-                label="Category Name" 
+                label="Tên danh mục" 
                 variant="outlined"
                 value={newCategory.name}
                 onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
@@ -72,13 +72,13 @@ const Categories: React.FC = () => {
               <TextField
                 fullWidth
                 select
-                label="Type"
+                label="Loại"
                 value={newCategory.type}
-                onChange={(e) => setNewCategory({ ...newCategory, type: e.target.value })}
+                onChange={(e) => setNewCategory({ ...newCategory, type: e.target.value as 'INCOME' | 'EXPENSE' })}
                 sx={{ mb: 2 }}
               >
-                <MenuItem value="INCOME">Income</MenuItem>
-                <MenuItem value="EXPENSE">Expense</MenuItem>
+                <MenuItem value="INCOME">Thu nhập</MenuItem>
+                <MenuItem value="EXPENSE">Chi phí</MenuItem>
               </TextField>
               <Button 
                 fullWidth 
@@ -87,7 +87,7 @@ const Categories: React.FC = () => {
                 type="submit"
                 sx={{ py: 1.5 }}
               >
-                Create Category
+                Tạo danh mục
               </Button>
             </form>
           </Paper>
@@ -98,23 +98,23 @@ const Categories: React.FC = () => {
             <Table>
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Category Name</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold' }}>Type</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Tên danh mục</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Loại</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 'bold' }}>Thao tác</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {loading ? (
                   <TableRow><TableCell colSpan={3} align="center"><CircularProgress /></TableCell></TableRow>
                 ) : categories.length === 0 ? (
-                  <TableRow><TableCell colSpan={3} align="center">No categories found.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={3} align="center">Không tìm thấy danh mục nào.</TableCell></TableRow>
                 ) : (
                   categories.map((cat) => (
                     <TableRow key={cat.id} hover>
                       <TableCell>{cat.name}</TableCell>
                       <TableCell>
                         <Chip 
-                          label={cat.type} 
+                          label={cat.type === 'INCOME' ? 'THU NHẬP' : 'CHI PHÍ'} 
                           color={cat.type === 'INCOME' ? 'success' : 'error'} 
                           size="small" 
                           variant="outlined"
