@@ -138,8 +138,8 @@ const Transactions: React.FC = () => {
                   fullWidth 
                   label="Amount" 
                   type="number" 
-                  value={newTransaction.amount} 
-                  onChange={(e) => setNewTransaction({...newTransaction, amount: Number(e.target.value)})} 
+                  value={newTransaction.amount === 0 ? '' : newTransaction.amount} 
+                  onChange={(e) => setNewTransaction({...newTransaction, amount: e.target.value === '' ? 0 : Number(e.target.value)})} 
                   required 
                 />
                 <TextField
