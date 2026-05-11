@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { 
   Typography, Paper, Box, CircularProgress, 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Button, TextField, Grid, MenuItem, IconButton, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText
+  Button, TextField, Grid, MenuItem, IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
 import CategoryIcon from '@mui/icons-material/Category';
 
 interface Transaction {
@@ -18,14 +17,13 @@ interface Transaction {
 interface Category {
   id: string;
   name: string;
+  type: 'INCOME' | 'EXPENSE';
 }
 
 const Transactions: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
   const [newTransaction, setNewTransaction] = useState<Transaction>({ amount: 0, description: '', category: '' });
 
   const fetchData = async () => {
@@ -52,10 +50,18 @@ const Transactions: React.FC = () => {
 
   const handleCreateTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Find the selected category to determine the sign
+    const selectedCategory = categories.find(cat => cat.name === newTransaction.category);
+    let finalAmount = Math.abs(newTransaction.amount);
+    if (selectedCategory?.type === 'EXPENSE') {
+      finalAmount = -finalAmount;
+    }
+
     const res = await fetch('/api/transactions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newTransaction)
+      body: JSON.stringify({ ...newTransaction, amount: finalAmount })
     });
     if (res.ok) {
       setNewTransaction({ ...newTransaction, amount: 0, description: '' });
@@ -68,31 +74,10 @@ const Transactions: React.FC = () => {
     if (res.ok) fetchData();
   };
 
-  const handleCreateCategory = async () => {
-    if (!newCategoryName) return;
-    const res = await fetch('/api/categories', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newCategoryName })
-    });
-    if (res.ok) {
-      setNewCategoryName('');
-      fetchData();
-    }
-  };
-
-  const handleDeleteCategory = async (id: string) => {
-    const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
-    if (res.ok) fetchData();
-  };
-
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>Transactions</Typography>
-        <Button startIcon={<CategoryIcon />} variant="outlined" onClick={() => setOpenCategoryDialog(true)}>
-          Categories
-        </Button>
       </Box>
 
       <Paper sx={{ p: 3, mb: 4, borderRadius: 3 }}>
@@ -100,14 +85,26 @@ const Transactions: React.FC = () => {
         <form onSubmit={handleCreateTransaction}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={3}>
-              <TextField fullWidth label="Amount" type="number" value={newTransaction.amount} onChange={(e) => setNewTransaction({...newTransaction, amount: Number(e.target.value)})} required />
+              <TextField 
+                fullWidth 
+                label="Amount" 
+                type="number" 
+                value={newTransaction.amount} 
+                onChange={(e) => setNewTransaction({...newTransaction, amount: Number(e.target.value)})} 
+                required 
+                helperText="Enter positive number"
+              />
             </Grid>
             <Grid item xs={12} sm={4}>
               <TextField fullWidth label="Description" value={newTransaction.description} onChange={(e) => setNewTransaction({...newTransaction, description: e.target.value})} required />
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField fullWidth select label="Category" value={newTransaction.category} onChange={(e) => setNewTransaction({...newTransaction, category: e.target.value})}>
-                {categories.map((cat) => <MenuItem key={cat.id} value={cat.name}>{cat.name}</MenuItem>)}
+                {categories.map((cat) => (
+                  <MenuItem key={cat.id} value={cat.name}>
+                    {cat.name} ({cat.type})
+                  </MenuItem>
+                ))}
               </TextField>
             </Grid>
             <Grid item xs={12} sm={2}>
@@ -145,23 +142,6 @@ const Transactions: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
-      <Dialog open={openCategoryDialog} onClose={() => setOpenCategoryDialog(false)} fullWidth maxWidth="xs">
-        <DialogTitle>Categories</DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: 'flex', gap: 1, mt: 1, mb: 2 }}>
-            <TextField label="New" fullWidth size="small" value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} />
-            <Button variant="contained" onClick={handleCreateCategory}><AddIcon /></Button>
-          </Box>
-          <List sx={{ maxHeight: 300, overflow: 'auto' }}>
-            {categories.map((cat) => (
-              <ListItem key={cat.id} secondaryAction={<IconButton edge="end" color="error" onClick={() => handleDeleteCategory(cat.id)}><DeleteIcon /></IconButton>}>
-                <ListItemText primary={cat.name} />
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-      </Dialog>
     </Box>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { 
   Typography, Paper, Box, CircularProgress, 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Button, TextField, Grid, IconButton
+  Button, TextField, Grid, IconButton, MenuItem, Chip
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,12 +10,13 @@ import AddIcon from '@mui/icons-material/Add';
 interface Category {
   id: string;
   name: string;
+  type: 'INCOME' | 'EXPENSE';
 }
 
 const Categories: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategory, setNewCategory] = useState({ name: '', type: 'EXPENSE' });
 
   const fetchCategories = async () => {
     try {
@@ -33,14 +34,14 @@ const Categories: React.FC = () => {
 
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCategoryName) return;
+    if (!newCategory.name) return;
     const res = await fetch('/api/categories', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newCategoryName })
+      body: JSON.stringify(newCategory)
     });
     if (res.ok) {
-      setNewCategoryName('');
+      setNewCategory({ name: '', type: 'EXPENSE' });
       fetchCategories();
     }
   };
@@ -63,10 +64,22 @@ const Categories: React.FC = () => {
                 fullWidth 
                 label="Category Name" 
                 variant="outlined"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
+                value={newCategory.name}
+                onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
                 sx={{ mb: 2 }}
+                required
               />
+              <TextField
+                fullWidth
+                select
+                label="Type"
+                value={newCategory.type}
+                onChange={(e) => setNewCategory({ ...newCategory, type: e.target.value })}
+                sx={{ mb: 2 }}
+              >
+                <MenuItem value="INCOME">Income</MenuItem>
+                <MenuItem value="EXPENSE">Expense</MenuItem>
+              </TextField>
               <Button 
                 fullWidth 
                 variant="contained" 
@@ -86,18 +99,28 @@ const Categories: React.FC = () => {
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 'bold' }}>Category Name</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold' }}>Type</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 'bold' }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {loading ? (
-                  <TableRow><TableCell colSpan={2} align="center"><CircularProgress /></TableCell></TableRow>
+                  <TableRow><TableCell colSpan={3} align="center"><CircularProgress /></TableCell></TableRow>
                 ) : categories.length === 0 ? (
-                  <TableRow><TableCell colSpan={2} align="center">No categories found.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={3} align="center">No categories found.</TableCell></TableRow>
                 ) : (
                   categories.map((cat) => (
                     <TableRow key={cat.id} hover>
                       <TableCell>{cat.name}</TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={cat.type} 
+                          color={cat.type === 'INCOME' ? 'success' : 'error'} 
+                          size="small" 
+                          variant="outlined"
+                          sx={{ fontWeight: 'bold' }}
+                        />
+                      </TableCell>
                       <TableCell align="center">
                         <IconButton color="error" onClick={() => handleDeleteCategory(cat.id)}>
                           <DeleteIcon />
