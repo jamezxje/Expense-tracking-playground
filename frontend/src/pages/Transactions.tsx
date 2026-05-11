@@ -5,7 +5,6 @@ import {
   Button, TextField, Grid, MenuItem, IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CategoryIcon from '@mui/icons-material/Category';
 
 interface Transaction {
   id?: string;
