@@ -1,15 +1,29 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Outlet, RouterProvider, createBrowserRouter } from 'react-router';
 
-const theme = createTheme();
+import App from './app';
+import { routesSection } from './routes/sections';
+import { ErrorBoundary } from './routes/components';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </React.StrictMode>,
-)
+// ----------------------------------------------------------------------
+
+const router = createBrowserRouter([
+  {
+    Component: () => (
+      <App>
+        <Outlet />
+      </App>
+    ),
+    errorElement: <ErrorBoundary />,
+    children: routesSection,
+  },
+]);
+
+const root = createRoot(document.getElementById('root')!);
+
+root.render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>
+);

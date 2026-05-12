@@ -1,70 +1,59 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
-import Transactions from './pages/Transactions';
-import Categories from './pages/Categories';
+import 'src/global.css';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#2196f3',
-      light: '#e3f2fd',
-    },
-    success: {
-      main: '#4caf50',
-    },
-    error: {
-      main: '#f44336',
-    },
-    background: {
-      default: '#f9f9f9',
-    },
-  },
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h4: {
-      fontWeight: 700,
-    },
-    h6: {
-      fontWeight: 600,
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          borderRadius: 8,
-          fontWeight: 600,
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          boxShadow: '0px 2px 4px rgba(0,0,0,0.05)',
-        },
-      },
-    },
-  },
-});
+import { useEffect } from 'react';
 
-function App() {
+import Fab from '@mui/material/Fab';
+
+import { usePathname } from 'src/routes/hooks';
+
+import { ThemeProvider } from 'src/theme/theme-provider';
+
+import { Iconify } from 'src/components/iconify';
+
+// ----------------------------------------------------------------------
+
+type AppProps = {
+  children: React.ReactNode;
+};
+
+export default function App({ children }: AppProps) {
+  useScrollToTop();
+
+  const githubButton = () => (
+    <Fab
+      size="medium"
+      aria-label="Github"
+      href="https://github.com/minimal-ui-kit/material-kit-react"
+      sx={{
+        zIndex: 9,
+        right: 20,
+        bottom: 20,
+        width: 48,
+        height: 48,
+        position: 'fixed',
+        bgcolor: 'grey.800',
+      }}
+    >
+      <Iconify width={24} icon="socials:github" sx={{ '--color': 'white' }} />
+    </Fab>
+  );
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/transactions" element={<Transactions />} />
-            <Route path="/categories" element={<Categories />} />
-          </Routes>
-        </Layout>
-      </Router>
+    <ThemeProvider>
+      {children}
+      {githubButton()}
     </ThemeProvider>
   );
 }
 
-export default App;
+// ----------------------------------------------------------------------
+
+function useScrollToTop() {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
